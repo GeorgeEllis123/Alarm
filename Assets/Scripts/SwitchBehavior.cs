@@ -25,7 +25,6 @@ public class SwitchBehavior : MonoBehaviour, IPointerClickHandler
 
     public void Toggle()
     {
-        Debug.Log(gameObject.name + " flipped");
         on = !on;  
         UpdateUI();
         parentAlarm.Flipped(this);

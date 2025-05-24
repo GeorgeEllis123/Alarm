@@ -1,94 +1,77 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class AlarmBehavior : MonoBehaviour, IAlarm
+public class AlarmBehavior : AlarmBase
 {
     [SerializeField] private AlarmBehavior leftAlarm;
     [SerializeField] private AlarmBehavior rightAlarm;
 
-    private enum State { Active, Deactivated, Inactive }
-
     public bool isMainAlarm;
     public bool completed = false;
+    private bool fakeDeactivate = false;
 
-    private Color activeColor = Color.red;
-    private Color deactivatedColor = Color.green;
-    private Color inactiveColor = Color.white;
-
-    private State state = State.Inactive;
-
-    private AudioSource audioSource;
-
-    private void Start()
+    protected override bool CheckCompletion()
     {
-        audioSource = GetComponent<AudioSource>();
-    }
-
-    private void Update()
-    {
-        if (audioSource != null && completed)
-        {
-            if (audioSource.isPlaying)
-            {
-                audioSource.Stop();
-            }
-        }
-
-        if (completed && !isMainAlarm && state != State.Deactivated)
-        {
-            gameObject.SetActive(false);
-        }
-
-        if (leftAlarm != null && rightAlarm != null)
+        if (leftAlarm && rightAlarm)
         {
             completed = leftAlarm.completed && rightAlarm.completed;
         }
+
+        return completed;
     }
 
-    public void Activate()
+    protected override void OnDeactivated()
     {
+        Debug.Log("deactivated " + gameObject.name);
+        if (leftAlarm && rightAlarm)
+        {
+            leftAlarm.gameObject.SetActive(false);
+            rightAlarm.gameObject.SetActive(false);
+        }
         if (audioSource != null)
-        {
-            audioSource.pitch = Random.Range(0.8f, 1.2f);
-            audioSource.Play();
-        }
-        state = State.Active;
-        UpdateColor();
+            audioSource.Stop();
     }
 
-    private void UpdateColor()
+    protected override void OnActivatedClick()
     {
-        switch (state)
+        if (leftAlarm && rightAlarm)
         {
-            case State.Active:
-                GetComponent<Image>().color = activeColor;
-                break;
-            case State.Deactivated:
-                GetComponent<Image>().color = deactivatedColor;
-                break;
-            case State.Inactive:
-                GetComponent<Image>().color = inactiveColor;
-                break;
+            leftAlarm.gameObject.SetActive(true);
+            rightAlarm.gameObject.SetActive(true);
+            leftAlarm.Activate();
+            rightAlarm.Activate();
+            fakeDeactivate = true;
+            UpdateColor();
+        }
+        else
+        {
+            completed = true;
         }
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    protected override void UpdateColor()
     {
-        if (state == State.Active)
+        Image img = GetComponent<Image>();
+        if (img != null)
         {
-            if (leftAlarm != null && rightAlarm != null)
+            switch (state)
             {
-                leftAlarm.gameObject.SetActive(true);
-                rightAlarm.gameObject.SetActive(true);
-                leftAlarm.Activate();
-                rightAlarm.Activate();
-                state = State.Deactivated;
-                UpdateColor();
-            }
-            else
-            {
-                completed = true;
+                case State.Active:
+                    if (fakeDeactivate)
+                    {
+                        img.color = deactivatedColor;
+                    }
+                    else
+                    {
+                        img.color = activeColor;
+                    }
+                    break;
+                case State.Deactivated:
+                    img.color = deactivatedColor;
+                    break;
+                case State.Inactive:
+                    img.color = inactiveColor;
+                    break;
             }
         }
     }
