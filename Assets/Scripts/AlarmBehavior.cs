@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class AlarmBehavior : MonoBehaviour, IPointerClickHandler
+public class AlarmBehavior : MonoBehaviour, IAlarm
 {
     [SerializeField] private AlarmBehavior leftAlarm;
     [SerializeField] private AlarmBehavior rightAlarm;
@@ -50,6 +50,7 @@ public class AlarmBehavior : MonoBehaviour, IPointerClickHandler
     {
         if (audioSource != null)
         {
+            audioSource.pitch = Random.Range(0.8f, 1.2f);
             audioSource.Play();
         }
         state = State.Active;
