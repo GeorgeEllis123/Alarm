@@ -6,10 +6,12 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private float interval = 2f;
     [SerializeField] private List<GameObject> alarmObjects; // can't figure out how to serialize IAlarm
+    [SerializeField] private float timeToWin = 6f;
 
     private List<IAlarm> alarms = new List<IAlarm>();
     private int currentIndex = 0;
-    private float timer = 0f;
+    private float spawnTimer = 0f;
+    private float winTimer = 0f;
 
     void Start()
     {
@@ -25,6 +27,8 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        winTimer += Time.deltaTime;
+
         if (AllAlarmsDeactivated())
             Win();
 
@@ -33,19 +37,19 @@ public class GameManager : MonoBehaviour
 
         if (AnyAlarmIsActive())
         {
-            timer += Time.deltaTime;
-            if (timer >= interval)
+            spawnTimer += Time.deltaTime;
+            if (spawnTimer >= interval)
             {
                 alarms[currentIndex].Activate();
                 currentIndex++;
-                timer = 0f;
+                spawnTimer = 0f;
             }
         }
         else
         {
             alarms[currentIndex].Activate();
             currentIndex++;
-            timer = 0f;
+            spawnTimer = 0f;
         }
     }
 
@@ -71,7 +75,14 @@ public class GameManager : MonoBehaviour
 
     private void Win()
     {
-        Debug.Log("Win!");
+        if (timeToWin >= winTimer)
+        {
+            Debug.Log("Win!");
+        }
+        else
+        {
+            Debug.Log("Lose!");
+        }
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
