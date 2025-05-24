@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AlarmBehavior : AlarmBase
+public class AlarmBehavior : AAlarm
 {
     [SerializeField] private AlarmBehavior leftAlarm;
     [SerializeField] private AlarmBehavior rightAlarm;

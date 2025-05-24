@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ThreeSwitchAlarm : AlarmBase
+public class ThreeSwitchAlarm : AAlarm
 {
     [SerializeField] private SwitchBehavior leftSwitch;
     [SerializeField] private SwitchBehavior middleSwitch;

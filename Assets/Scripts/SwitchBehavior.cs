@@ -55,8 +55,6 @@ public class SwitchBehavior : MonoBehaviour, IPointerClickHandler
 
     private IEnumerator AnimateSlider(Vector3 targetPosition)
     {
-        Debug.Log(gameObject.name);
-
         float duration = 0.1f;
         float elapsed = 0f;
         Vector3 startingPos = slider.position;

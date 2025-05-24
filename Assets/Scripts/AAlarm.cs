@@ -1,8 +1,9 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Runtime.InteropServices.WindowsRuntime;
 
-public abstract class AlarmBase : MonoBehaviour, IAlarm, IPointerClickHandler
+public abstract class AAlarm : MonoBehaviour, IAlarm, IPointerClickHandler
 {
     protected enum State { Active, Deactivated, Inactive }
 
@@ -67,7 +68,23 @@ public abstract class AlarmBase : MonoBehaviour, IAlarm, IPointerClickHandler
         }
     }
 
+    public bool IsActive()
+    {
+        return state == State.Active;
+    }
+
+    public bool IsDeactivated()
+    {
+        return state == State.Deactivated;
+    }
+
+    public bool IsInactive()
+    {
+        return state == State.Inactive;
+    }
+
     protected abstract bool CheckCompletion();
     protected abstract void OnDeactivated();
     protected abstract void OnActivatedClick();
+
 }

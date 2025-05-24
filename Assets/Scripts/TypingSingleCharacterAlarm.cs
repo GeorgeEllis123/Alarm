@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class TypingSingleCharacterAlarm : AlarmBase
+public class TypingSingleCharacterAlarm : AAlarm
 {
     [SerializeField] private TypingCharacter character;
 
