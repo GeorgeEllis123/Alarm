@@ -1,17 +1,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private float interval = 2f;
     [SerializeField] private List<GameObject> alarmObjects; // can't figure out how to serialize IAlarm
     [SerializeField] private float timeToWin = 6f;
+    [SerializeField] private float endDelay = 2f;
 
     private List<IAlarm> alarms = new List<IAlarm>();
     private int currentIndex = 0;
     private float spawnTimer = 0f;
     private float winTimer = 0f;
+    private bool gameEnded = false;
+
+    [SerializeField] private TextMeshProUGUI endingText;
+
 
     void Start()
     {
@@ -23,10 +29,20 @@ public class GameManager : MonoBehaviour
                 alarms.Add(alarm);
             }
         }
+
+        GameObject endingObj = GameObject.FindGameObjectWithTag("Ending");
+        if (endingObj != null)
+            endingText = endingObj.GetComponent<TextMeshProUGUI>();
+
+        if (endingText != null)
+            endingText.gameObject.SetActive(false); // Hide at start
     }
 
     void Update()
     {
+        if (gameEnded)
+            return;
+
         winTimer += Time.deltaTime;
 
         if (AllAlarmsDeactivated())
@@ -75,14 +91,35 @@ public class GameManager : MonoBehaviour
 
     private void Win()
     {
-        if (timeToWin >= winTimer)
+        if (endingText != null)
         {
-            Debug.Log("Win!");
+            endingText.gameObject.SetActive(true);
+            if (timeToWin >= winTimer)
+            {
+                endingText.text = "You Woke Up In Time!";
+                Debug.Log("Win!");
+            }
+            else
+            {
+                endingText.text = "You Overslept!"; 
+                Debug.Log("Lose!");
+            }
+        }
+
+        Invoke(nameof(ReloadScene), endDelay); // Wait before reloading
+    }
+
+    private void ReloadScene()
+    {
+        int currentIndex = SceneManager.GetActiveScene().buildIndex;
+
+        if (currentIndex < 3)
+        {
+            SceneManager.LoadScene(currentIndex + 1); // Load next scene
         }
         else
         {
-            Debug.Log("Lose!");
+            Debug.Log("Last scene reached. Staying on current scene.");
         }
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
