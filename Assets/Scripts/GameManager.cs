@@ -18,6 +18,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private TextMeshProUGUI endingText;
 
+    private bool textShown = false;
+
 
     void Start()
     {
@@ -43,7 +45,8 @@ public class GameManager : MonoBehaviour
         if (gameEnded)
             return;
 
-        winTimer += Time.deltaTime;
+        if (!textShown)
+            winTimer += Time.deltaTime;
 
         if (AllAlarmsDeactivated())
             Win();
@@ -105,21 +108,30 @@ public class GameManager : MonoBehaviour
                 Debug.Log("Lose!");
             }
         }
-
+        textShown = true;
         Invoke(nameof(ReloadScene), endDelay); // Wait before reloading
     }
 
     private void ReloadScene()
     {
+        textShown = false;
         int currentIndex = SceneManager.GetActiveScene().buildIndex;
 
-        if (currentIndex < 3)
+        if (endingText.text == "You Overslept!")
+        {
+            SceneManager.LoadScene(currentIndex);
+        }
+        else if (currentIndex < 3)
         {
             SceneManager.LoadScene(currentIndex + 1); // Load next scene
         }
         else
         {
             Debug.Log("Last scene reached. Staying on current scene.");
+            
+                endingText.text = "You won!";
+                endingText.gameObject.SetActive(true);
+                textShown = true;
         }
     }
 }
